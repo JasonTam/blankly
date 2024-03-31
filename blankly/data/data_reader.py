@@ -19,6 +19,7 @@
 import json
 import pandas as pd
 from enum import Enum
+from typing import Union
 
 from blankly.utils import convert_epochs
 
@@ -67,7 +68,7 @@ class DataReader:
             raise AssertionError(f"Must have at least these columns: {required_columns} for {key}")
         self._internal_dataset[key] = pd.DataFrame.from_dict(contents)
 
-    def __init__(self, data_type: [DataTypes, str]):
+    def __init__(self, data_type: Union[DataTypes, str]):
         self._internal_dataset = {}
         self.type: DataTypes = data_type
         self.price_data: bool = self.__is_price_data(data_type)
@@ -198,7 +199,7 @@ class PriceReader(__FormatReader):
             self.prices_info[symbol]['start_time'] = time_series.iloc[0]
             self.prices_info[symbol]['stop_time'] = time_series.iloc[-1]
 
-    def __init__(self, file_path: [str, list], symbol: [str, list]):
+    def __init__(self, file_path: Union[str, list], symbol: Union[str, list]):
         """
         Read in a new custom price dataset in either json or csv format
 
@@ -264,7 +265,7 @@ class JsonEventReader(DataReader):
 
 
 class TickReader(__FormatReader):
-    def __init__(self, file_path: [str, list], symbol: [str, list] = None):
+    def __init__(self, file_path: Union[str, list], symbol: Union[str, list] = None):
         super().__init__(DataTypes.tick_csv)
         file_paths, symbols = self._convert_to_list(file_path, symbol)
 

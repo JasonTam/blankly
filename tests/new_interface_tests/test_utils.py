@@ -3,6 +3,7 @@ from typing import Union
 from blankly.enums import ContractType, PositionMode, TimeInForce, Side, OrderStatus, OrderType
 from blankly.exchanges.interfaces.paper_trade.paper_trade import PaperTrade
 from blankly.exchanges.interfaces.exchange_interface import ExchangeInterface
+from blankly.exchanges.interfaces.coinbase_pro.coinbase_pro import CoinbasePro
 from blankly.exchanges.interfaces.alpaca.alpaca import Alpaca
 from blankly.exchanges.abc_base_exchange import ABCBaseExchange
 from blankly.exchanges.interfaces.abc_base_exchange_interface import ABCBaseExchangeInterface

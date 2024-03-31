@@ -25,6 +25,7 @@ from datetime import datetime as dt
 import copy
 import enum
 import blankly
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -491,7 +492,7 @@ class BackTestController(ABCBacktestController):  # circular import to type mode
 
     def add_prices(self,
                    symbol: str,
-                   resolution: [str, int, float],
+                   resolution: Union[str, int, float],
                    to: str = None,
                    start_date: typing.Union[str, float, int] = None,
                    stop_date: typing.Union[str, float, int] = None):
@@ -754,7 +755,7 @@ class BackTestController(ABCBacktestController):  # circular import to type mode
 
         run_events()
 
-    def sleep(self, seconds: [int, float]):
+    def sleep(self, seconds: Union[int, float]):
         # Always evaluate limits
         self.interface.evaluate_limits()
         self.sleep_count += 1

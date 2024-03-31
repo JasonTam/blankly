@@ -18,6 +18,7 @@
 import threading
 import abc
 import typing
+from typing import Union
 
 from blankly.exchanges.abc_base_exchange import ABCBaseExchange
 from blankly.exchanges.interfaces.paper_trade.backtest_controller import BackTestController, BacktestResult
@@ -99,7 +100,7 @@ class Model(abc.ABC):
         else:
             return self.__backtester.time
 
-    def sleep(self, seconds: [int, float, str]):
+    def sleep(self, seconds: Union[int, float, str]):
         seconds = time_interval_to_seconds(seconds)
         if not self.is_backtesting:
             time.sleep(seconds)

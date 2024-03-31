@@ -23,6 +23,7 @@ from datetime import datetime as dt
 import numpy
 import pandas as pd
 import pytest
+from typing import Union
 
 import blankly
 from blankly.exchanges.orders.limit_order import LimitOrder
@@ -194,8 +195,8 @@ class InterfaceHomogeneity(unittest.TestCase):
         limits = []
         sorted_orders = {}
 
-        def evaluate_limit_order(interface: ABCExchangeInterface, symbol: str, buy_price: [float, int],
-                                 sell_price: [float, int], size: [float, int]):
+        def evaluate_limit_order(interface: ABCExchangeInterface, symbol: str, buy_price: Union[float, int],
+                                 sell_price: Union[float, int], size: Union[float, int]):
             initial_account = interface.get_account(get_quote_asset(symbol))
             buy = interface.limit_order(symbol, 'buy', buy_price, size)
             after_buy_account = interface.get_account(get_quote_asset(symbol))
@@ -272,8 +273,8 @@ class InterfaceHomogeneity(unittest.TestCase):
 
         self.assertTrue(compare_responses(cancels, force_exchange_specific=False))
 
-    def evaluate_tp_sl_order(self, sorted_orders: dict, interface, type_, symbol: str, sell_price: [float, int],
-                             size: [float, int]) -> list:
+    def evaluate_tp_sl_order(self, sorted_orders: dict, interface, type_, symbol: str, sell_price: Union[float, int],
+                             size: Union[float, int]) -> list:
         if type_ == 'stop_loss':
             order_func = interface.stop_loss_order
         elif type_ == 'take_profit':
