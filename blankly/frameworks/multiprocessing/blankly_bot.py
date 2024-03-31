@@ -19,11 +19,17 @@
 import copy
 from multiprocessing import Manager, Process
 
-from binance.client import Client as Binance_API
+try:
+    from binance.client import Client as Binance_API
+except ImportError as _e:
+    pass
+try:
+    from blankly.exchanges.interfaces.coinbase_pro.coinbase_pro_api import API as CoinbaseProAPI
+except ImportError as _e:
+    pass
 
 import blankly
 from blankly.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
-from blankly.exchanges.interfaces.coinbase_pro.coinbase_pro_api import API as CoinbaseProAPI
 from blankly.exchanges.managers.orderbook_manager import OrderbookManager
 from blankly.exchanges.managers.ticker_manager import TickerManager
 from blankly.utils.utils import info_print
@@ -38,8 +44,8 @@ class BlanklyBot:
     orderbook_manager: OrderbookManager
     ticker_manager: TickerManager
     interface: ABCExchangeInterface
-    coinbase_pro_direct: CoinbaseProAPI
-    binance_direct: Binance_API
+    coinbase_pro_direct: "CoinbaseProAPI"
+    binance_direct: "Binance_API"
 
     def __init__(self):
         """
