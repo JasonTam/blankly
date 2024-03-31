@@ -17,15 +17,9 @@
 """
 
 from typing import Dict, List
-import alpaca_trade_api
-from binance.client import Client as BinanceClient
 from questionary import Choice
 
 from blankly.deployment.ui import print_failure
-from blankly.exchanges.interfaces.alpaca import alpaca_api
-from blankly.exchanges.interfaces.coinbase_pro.coinbase_pro_api import API as CoinbaseProAPI
-from blankly.exchanges.interfaces.ftx.ftx_api import FTXAPI
-from blankly.exchanges.interfaces.oanda.oanda_api import OandaAPI
 
 
 class Exchange:
@@ -60,38 +54,49 @@ def kucoin_test_func(auth, tld):
         return KucoinAPI.User(auth['API_KEY'], auth['API_SECRET'], auth['API_PASS'], auth['sandbox']).get_base_fee
 
 
-EXCHANGES = [
-    Exchange('alpaca', ['MSFT', 'GME', 'AAPL'],
+EXCHANGES = []
+try:
+    import alpaca_trade_api
+    from blankly.exchanges.interfaces.alpaca import alpaca_api
+    EXCHANGE_ALPACA = Exchange('alpaca', ['MSFT', 'GME', 'AAPL'],
              lambda auth, tld: alpaca_trade_api.REST(key_id=auth['API_KEY'],
                                                      secret_key=auth['API_SECRET'],
                                                      base_url=(alpaca_api.live_url,
                                                                alpaca_api.paper_url)[auth['sandbox']]
-                                                     ).get_account()),
-
-    Exchange('binance', ['BTC-USDT', 'ETH-USDT', 'SOL-USDT'],
+                                                     ).get_account())
+    EXCHANGES.append(EXCHANGE_ALPACA)
+except:
+    pass
+try:
+    from binance.client import Client as BinanceClient
+    EXCHANGE_BINANCE = Exchange('binance', ['BTC-USDT', 'ETH-USDT', 'SOL-USDT'],
              lambda auth, tld: BinanceClient(api_key=auth['API_KEY'], api_secret=auth['API_SECRET'],
                                              tld=tld, testnet=auth['sandbox']).get_account(),
-             tlds=['com', 'us'], currency='USDT'),
-
-    Exchange('coinbase_pro', ['BTC-USD', 'ETH-USD', 'SOL-USD'],
+             tlds=['com', 'us'], currency='USDT')
+    EXCHANGES.append(EXCHANGE_BINANCE)
+except:
+    pass
+try:
+    from blankly.exchanges.interfaces.coinbase_pro.coinbase_pro_api import API as CoinbaseProAPI
+    EXCHANGE_COINBASE = Exchange('coinbase_pro', ['BTC-USD', 'ETH-USD', 'SOL-USD'],
              lambda auth, tld: CoinbaseProAPI(api_key=auth['API_KEY'], api_secret=auth['API_SECRET'],
                                               api_pass=auth['API_PASS'],
                                               API_URL=('https://api.pro.coinbase.com/',
                                                        'https://api-public.sandbox.pro.coinbase.com/')[auth['sandbox']]
                                               ).get_accounts(),
-             key_info=['API_KEY', 'API_SECRET', 'API_PASS']),
-    Exchange('ftx', ['BTC-USD', 'ETH-USD', 'SOL-USD'],
-             lambda auth, tld: FTXAPI(auth['API_KEY'], auth['API_SECRET'], tld).get_account_info(),
-             tlds=['com', 'us'], python_class='FTX', display_name='FTX'),
-
-    Exchange('oanda', ['BTC-USD', 'ETH-USD', 'SOL-USD'],
+             key_info=['API_KEY', 'API_SECRET', 'API_PASS'])
+    EXCHANGES.append(EXCHANGE_COINBASE)
+except:
+    pass
+try:
+    from blankly.exchanges.interfaces.oanda.oanda_api import OandaAPI
+    EXCHANGE_OANDA = Exchange('oanda', ['BTC-USD', 'ETH-USD', 'SOL-USD'],
              lambda auth, tld: OandaAPI(personal_access_token=auth['PERSONAL_ACCESS_TOKEN'],
                                         account_id=auth['ACCOUNT_ID'], sandbox=auth['sandbox']).get_account(),
-             key_info=['ACCOUNT_ID', 'PERSONAL_ACCESS_TOKEN']),
-
-    Exchange('kucoin', ['BTC-USDT', 'ETH-USDT', 'SOL-USDT'], kucoin_test_func,
-             key_info=['API_KEY', 'API_SECRET', 'API_PASS'], currency='USDT'),
-]
+             key_info=['ACCOUNT_ID', 'PERSONAL_ACCESS_TOKEN'])
+    EXCHANGES.append(EXCHANGE_OANDA)
+except:
+    pass
 
 EXCHANGE_CHOICES_NO_KEYLESS = [Choice(exchange.display_name, exchange)
                                for exchange in EXCHANGES]
