@@ -43,17 +43,6 @@ class Exchange:
         self.currency = currency
 
 
-def kucoin_test_func(auth, tld):
-    try:
-        from kucoin import client as KucoinAPI
-    except ImportError:
-        print()  # we are running loading bar at this point, go next line to avoid making a mess
-        print_failure('kucoin-python must be installed to check Kucoin API Keys')
-        print_failure('Skipping check')
-    else:
-        return KucoinAPI.User(auth['API_KEY'], auth['API_SECRET'], auth['API_PASS'], auth['sandbox']).get_base_fee
-
-
 EXCHANGES = []
 try:
     import alpaca_trade_api
@@ -68,15 +57,6 @@ try:
 except:
     pass
 try:
-    from binance.client import Client as BinanceClient
-    EXCHANGE_BINANCE = Exchange('binance', ['BTC-USDT', 'ETH-USDT', 'SOL-USDT'],
-             lambda auth, tld: BinanceClient(api_key=auth['API_KEY'], api_secret=auth['API_SECRET'],
-                                             tld=tld, testnet=auth['sandbox']).get_account(),
-             tlds=['com', 'us'], currency='USDT')
-    EXCHANGES.append(EXCHANGE_BINANCE)
-except:
-    pass
-try:
     from blankly.exchanges.interfaces.coinbase_pro.coinbase_pro_api import API as CoinbaseProAPI
     EXCHANGE_COINBASE = Exchange('coinbase_pro', ['BTC-USD', 'ETH-USD', 'SOL-USD'],
              lambda auth, tld: CoinbaseProAPI(api_key=auth['API_KEY'], api_secret=auth['API_SECRET'],
@@ -86,15 +66,6 @@ try:
                                               ).get_accounts(),
              key_info=['API_KEY', 'API_SECRET', 'API_PASS'])
     EXCHANGES.append(EXCHANGE_COINBASE)
-except:
-    pass
-try:
-    from blankly.exchanges.interfaces.oanda.oanda_api import OandaAPI
-    EXCHANGE_OANDA = Exchange('oanda', ['BTC-USD', 'ETH-USD', 'SOL-USD'],
-             lambda auth, tld: OandaAPI(personal_access_token=auth['PERSONAL_ACCESS_TOKEN'],
-                                        account_id=auth['ACCOUNT_ID'], sandbox=auth['sandbox']).get_account(),
-             key_info=['ACCOUNT_ID', 'PERSONAL_ACCESS_TOKEN'])
-    EXCHANGES.append(EXCHANGE_OANDA)
 except:
     pass
 

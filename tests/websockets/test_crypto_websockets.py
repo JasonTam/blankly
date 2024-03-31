@@ -31,15 +31,9 @@ class CryptoWebsockets:
         self.validated_responses = {
             'orderbook': {
                 'coinbase_pro': False,
-                'binance': False,
-                'ftx': False,
-                'kucoin': False
             },
             'prices': {
                 'coinbase_pro': False,
-                'binance': False,
-                'ftx':  False,
-                'kucoin': False
             }
         }
 
@@ -60,27 +54,8 @@ class CryptoWebsockets:
         self.price_manager.create_ticker(self.coinbase_price, override_symbol='BTC-USD',
                                          override_exchange='coinbase_pro')
 
-        # Subscribe to a bunch with binance
-        self.price_manager.create_ticker(self.binance_price, override_symbol='BTC-USDT', override_exchange='binance')
-        self.price_manager.create_ticker(self.binance_price, override_symbol='ETH-USDT', override_exchange='binance')
-        self.price_manager.create_ticker(self.ftx_price, override_symbol='BTC-USD', override_exchange='ftx')
-        self.price_manager.create_ticker(self.kucoin_price, override_symbol='BTC-USDT', override_exchange='kucoin')
-        self.price_manager.create_ticker(self.okx_price, override_symbol='BTC-USDT', override_exchange='okx')
-
         self.orderbook_manager.create_orderbook(self.coinbase_orderbook, override_symbol='BTC-USD',
                                                 override_exchange='coinbase_pro')
-
-        self.orderbook_manager.create_orderbook(self.kucoin_orderbook, override_symbol='BTC-USDT',
-                                                override_exchange='kucoin')
-
-        self.orderbook_manager.create_orderbook(self.binance_orderbook, override_symbol='BTC-USDT',
-                                                override_exchange='binance')
-
-        self.orderbook_manager.create_orderbook(self.ftx_orderbook, override_symbol='BTC-USD',
-                                                override_exchange='ftx')
-
-        self.orderbook_manager.create_orderbook(self.okx_orderbook, override_symbol='BTC-USDT',
-                                                override_exchange='okx')
 
         if self.timeout(60):
             self.passed = True
@@ -144,27 +119,6 @@ class CryptoWebsockets:
             self.validated_responses['prices']['coinbase_pro'] = True
             self.price_manager.close_websocket('BTC-USD', 'coinbase_pro')
 
-    def binance_price(self, message):
-        if self.validate_price_event(message):
-            self.validated_responses['prices']['binance'] = True
-            self.price_manager.close_websocket('BTC-USDT', 'binance')
-            self.price_manager.close_websocket('ETH-USDT', 'binance')
-
-    def ftx_price(self, message):
-        if self.validate_price_event(message):
-            self.validated_responses['prices']['ftx'] = True
-            self.price_manager.close_websocket('BTC-USD', 'ftx')
-
-    def kucoin_price(self, message):
-        if self.validate_price_event(message):
-            self.validated_responses['prices']['kucoin'] = True
-            self.price_manager.close_websocket('BTC-USDT', 'kucoin')
-
-    def okx_price(self, message):
-        if self.validate_price_event(message):
-            self.validated_responses['prices']['okx'] = True
-            self.price_manager.close_websocket('BTC-USDT', 'okx')
-
     """
     These can async validate each response
     """
@@ -172,23 +126,3 @@ class CryptoWebsockets:
         if self.validate_orderbook_event(message):
             self.validated_responses['orderbook']['coinbase_pro'] = True
             self.orderbook_manager.close_websocket('BTC-USD', 'coinbase_pro')
-
-    def binance_orderbook(self, message):
-        if self.validate_orderbook_event(message):
-            self.validated_responses['orderbook']['binance'] = True
-            self.orderbook_manager.close_websocket('BTC-USDT', 'binance')
-
-    def ftx_orderbook(self, message):
-        if self.validate_orderbook_event(message):
-            self.validated_responses['orderbook']['ftx'] = True
-            self.orderbook_manager.close_websocket('BTC-USD', 'ftx')
-
-    def kucoin_orderbook(self, message):
-        if self.validate_orderbook_event(message):
-            self.validated_responses['orderbook']['kucoin'] = True
-            self.orderbook_manager.close_websocket('BTC-USDT', 'kucoin')
-
-    def okx_orderbook(self, message):
-        if self.validate_orderbook_event(message):
-            self.validated_responses['orderbook']['okx'] = True
-            self.orderbook_manager.close_websocket('BTC-USDT', 'okx')

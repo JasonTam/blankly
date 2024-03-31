@@ -284,9 +284,6 @@ def get_model_repr(model: dict) -> str:
 def generate_settings_json(tld: str):
     data = load_user_preferences(override_allow_nonexistent=True)
 
-    data['settings']['binance']['binance_tld'] = tld
-    data['settings']['ftx']['ftx_tld'] = tld
-    data['settings']['ftx_futures']['ftx_tld'] = tld
     return json.dumps(data, indent=4)
 
 

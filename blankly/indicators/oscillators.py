@@ -20,8 +20,11 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-import tulipy as ti
-
+try:
+    import tulipy as ti
+except:
+    pass
+import talib
 from blankly.indicators.utils import check_series, convert_to_numpy
 
 
@@ -32,7 +35,9 @@ def rsi(data: Any, period: int = 14, round_rsi: bool = False, use_series=False) 
     if check_series(data):
         use_series = True
     data = convert_to_numpy(data)
-    rsi_values = ti.rsi(data, period)
+    # rsi_values = ti.rsi(data, period)
+    rsi_values = talib.RSI(data, timeperiod=period)
+
     if round_rsi:
         rsi_values = np.round(rsi_values, 2)
     return pd.Series(rsi_values) if use_series else rsi_values

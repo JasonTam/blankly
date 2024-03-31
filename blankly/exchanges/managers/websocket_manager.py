@@ -55,10 +55,6 @@ class WebsocketManager(ABCExchangeWebsocket):
         else:
             exchange = self.__default_exchange
 
-        if exchange == "binance":
-            currency_id = blankly.utils.to_exchange_symbol(currency_id, "binance")
-        if exchange == "ftx":
-            currency_id = blankly.utils.to_exchange_symbol(currency_id, "ftx")
         return self.websockets[exchange][currency_id]
 
     def get_ticker(self, symbol, override_exchange=None):
@@ -162,6 +158,6 @@ class WebsocketManager(ABCExchangeWebsocket):
         Get the most recent tick received
         """
         websocket = self.__evaluate_overrides(override_symbol, override_exchange)
-        # TODO fix the returned value below, really this needs a class like in binance that can create a callback to
+        # TODO fix the returned value below, really this needs a class that can create a callback to
         #  allow a pointer to be subbed in for whichever exchange/currency/websocket type is overridden
         return websocket.get_most_recent_tick()

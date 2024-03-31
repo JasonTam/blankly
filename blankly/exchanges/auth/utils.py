@@ -30,13 +30,6 @@ auth_cache = {}
 #     name, portfolio = __load_auth(keys_file, name, exchange_type)
 #
 #     return [portfolio["API_KEY"], portfolio["API_SECRET"], portfolio["API_PASS"]], name
-#
-#
-# def load_auth_binance(keys_file, name):
-#     exchange_type = "binance"
-#     name, portfolio = __load_auth(keys_file, name, exchange_type)
-#
-#     return [portfolio["API_KEY"], portfolio["API_SECRET"]], name
 
 
 def load_auth(exchange_type, keys_file=None, name=None):
@@ -86,7 +79,7 @@ def write_auth_cache(exchange, name, auth):
     in the module to pull from exchanges at points they need the API
 
     Args:
-        exchange (str): Exchange name ex: "coinbase_pro" or "binance"
+        exchange (str): Exchange name ex: "coinbase_pro"
         name (str): Portfolio name ex: "my cool portfolio"
         auth (obj): Authenticated object to store & recover.
     """

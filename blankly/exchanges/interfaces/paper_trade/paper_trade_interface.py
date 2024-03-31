@@ -715,7 +715,7 @@ class PaperTradeInterface(ExchangeInterface, BacktestingWrapper):
         if self.backtesting:
             # Add exchanges that actually require a symbol
             type_ = self.get_exchange_type()
-            if type_ == 'okx' or type_ == 'binance':
+            if type_ == 'w/e, we got rid of these exchanges':
                 if symbol not in self.get_fees_cache:
                     self.get_fees_cache[symbol] = self.calls.get_fees(symbol)
                     return self.get_fees_cache[symbol]
@@ -742,9 +742,6 @@ class PaperTradeInterface(ExchangeInterface, BacktestingWrapper):
         if symbol not in self.get_order_filter_cache:
             self.get_order_filter_cache[symbol] = self.calls.get_order_filter(symbol)
 
-        if self.get_exchange_type() == 'binance':
-            self.get_order_filter_cache[symbol] = self.__evaluate_binance_limits(self.get_price(symbol),
-                                                                                 self.get_order_filter_cache[symbol])
         return self.get_order_filter_cache[symbol]
 
     def get_price(self, symbol) -> float:
@@ -771,9 +768,3 @@ class PaperTradeInterface(ExchangeInterface, BacktestingWrapper):
                     return self.calls.get_price(symbol)
             else:
                 return self.calls.get_price(symbol)
-
-    @staticmethod
-    def __evaluate_binance_limits(price: (int, float), order_filter):
-        order_filter['limit_order']['min_price'] = order_filter['exchange_specific']['limit_multiplier_down'] * price
-        order_filter['limit_order']['max_price'] = order_filter['exchange_specific']['limit_multiplier_up'] * price
-        return order_filter

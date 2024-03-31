@@ -36,7 +36,7 @@ def price_event(price, symbol, state: StrategyState):
         interface.market_order(symbol, 'buy', int(interface.cash/price))
         variables['owns_position'] = True
     elif is_cross_down and variables['owns_position']:
-        # use strategy.base_asset if on CoinbasePro or Binance
+        # use strategy.base_asset if on CoinbasePro
         interface.market_order(symbol, 'sell', int(interface.account[symbol].available))
         variables['owns_position'] = False
 

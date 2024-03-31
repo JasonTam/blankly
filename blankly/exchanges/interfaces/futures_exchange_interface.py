@@ -53,7 +53,7 @@ class FuturesExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
         return symbol
 
     def get_exchange_type(self) -> str:
-        """Returns the exchange type (ex. 'binance', 'coinbase', 'alpaca')"""
+        """Returns the exchange type (ex. 'coinbase', 'alpaca')"""
         return self.exchange_name
 
     @abc.abstractmethod

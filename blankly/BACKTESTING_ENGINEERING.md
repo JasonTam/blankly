@@ -17,7 +17,7 @@ The backtester evaluates these filter metrics:
 - Max/min price for limit orders
 - If the asset is fractional
 - Notional differences between the buy/sell side
-- Percentage price for limit orders (i.e Binance +- 25% filter)
+- Percentage price for limit orders (i.e +- 25% filter)
 
 ### Exchange Data
 

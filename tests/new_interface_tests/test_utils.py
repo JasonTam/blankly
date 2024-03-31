@@ -2,21 +2,12 @@ from typing import Union
 
 from blankly.enums import ContractType, PositionMode, TimeInForce, Side, OrderStatus, OrderType
 from blankly.exchanges.interfaces.paper_trade.paper_trade import PaperTrade
-from blankly.exchanges.interfaces.coinbase_pro.coinbase_pro import CoinbasePro
 from blankly.exchanges.interfaces.exchange_interface import ExchangeInterface
-from blankly.exchanges.interfaces.okx.okx import Okx
-from blankly.exchanges.interfaces.kucoin.kucoin import Kucoin
-from blankly.exchanges.interfaces.binance.binance import Binance
 from blankly.exchanges.interfaces.alpaca.alpaca import Alpaca
-from blankly.exchanges.interfaces.oanda.oanda import Oanda
-from blankly.exchanges.interfaces.ftx.ftx import FTX
 from blankly.exchanges.abc_base_exchange import ABCBaseExchange
 from blankly.exchanges.interfaces.abc_base_exchange_interface import ABCBaseExchangeInterface
-from blankly.exchanges.interfaces.binance_futures.binance_futures import BinanceFutures
-from blankly.exchanges.interfaces.ftx_futures.ftx_futures import FTXFutures
 from blankly.exchanges.futures.futures_exchange import FuturesExchange
 from blankly.exchanges.interfaces.futures_exchange_interface import FuturesExchangeInterface
-from blankly.exchanges.interfaces.paper_trade.futures.futures_paper_trade_interface import FuturesPaperTradeInterface
 from blankly.exchanges.interfaces.paper_trade.paper_trade_interface import PaperTradeInterface
 from blankly.exchanges.orders.futures.futures_order import FuturesOrder
 from blankly.exchanges.orders.limit_order import LimitOrder
@@ -33,41 +24,15 @@ from _pytest.python_api import approx
 
 from contextlib import contextmanager
 
-# futures exchanges
-binance_futures = BinanceFutures(keys_path="./tests/config/keys.json",
-                                 preferences_path="./tests/config/settings.json",
-                                 portfolio_name="Futures Test Key")
-ftx_futures = FTXFutures(keys_path="./tests/config/keys.json",
-                         preferences_path="./tests/config/settings.json",
-                         portfolio_name="Dotcom Test Account")
-
 # spot exchanges
 coinbase_pro = CoinbasePro(portfolio_name="Sandbox Portfolio",
                            keys_path='./tests/config/keys.json',
                            settings_path="./tests/config/settings.json")
-okx = Okx(portfolio_name="okx sandbox portfolio",
-          keys_path='./tests/config/keys.json',
-          settings_path="./tests/config/settings.json")
-kucoin = Kucoin(portfolio_name="KC Sandbox Portfolio",
-                keys_path='./tests/config/keys.json',
-                settings_path="./tests/config/settings.json")
-binance = Binance(portfolio_name="Spot Test Key",
-                  keys_path='./tests/config/keys.json',
-                  settings_path="./tests/config/settings.json")
 alpaca = Alpaca(portfolio_name="alpaca test portfolio",
                 keys_path='./tests/config/keys.json',
                 settings_path="./tests/config/settings.json")
-oanda = Oanda(portfolio_name="oanda test portfolio",
-              keys_path='./tests/config/keys.json',
-              settings_path="./tests/config/settings.json")
-ftx = FTX(portfolio_name="Main Account",
-          keys_path='./tests/config/keys.json',
-          settings_path="./tests/config/settings.json")
 
 FUTURES_EXCHANGES = [
-    FuturesPaperTradeInterface(binance_futures.get_type() + '_paper_trade', binance_futures.interface, {'USDT': 1000}),
-    binance_futures,
-    ftx_futures,
 ]
 SPOT_EXCHANGES = [
     # PaperTradeInterface deferring to the subinterface get_exchange_type causes problems...
@@ -78,12 +43,7 @@ SPOT_EXCHANGES = [
     # It breaks all the tests.
     # coinbase_pro,
 
-    okx,
-    kucoin,
-    binance,
     alpaca,
-    oanda,
-    ftx
 ]
 
 for exchange in FUTURES_EXCHANGES + SPOT_EXCHANGES:
@@ -96,13 +56,8 @@ def get_symbols(exchange: ABCBaseExchangeInterface):
     exchange_type = exchange.get_exchange_type()
 
     # crypto exchanges that use USD
-    if exchange_type.startswith('coinbase') \
-            or exchange_type.startswith('ftx'):
+    if exchange_type.startswith('coinbase'):
         return ['BTC-USD']
-
-    # forex
-    if exchange_type.startswith('oanda'):
-        return ['EUR-USD', 'GBP/CAD']
 
     # stonks
     if exchange_type.startswith('alpaca'):

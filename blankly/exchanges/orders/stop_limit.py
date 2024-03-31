@@ -47,8 +47,6 @@ class StopLimit(Order):
             'status': 'pending',
             'settled': False
         }
-        binance Response:
-        TODO add this
 
         Guaranteed:
         needed = [

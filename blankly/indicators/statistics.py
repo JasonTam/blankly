@@ -19,8 +19,10 @@
 from typing import Any
 
 import pandas as pd
-import tulipy as ti
-
+try:
+    import tulipy as ti
+except:
+    pass
 from blankly.indicators.utils import check_series, convert_to_numpy
 
 

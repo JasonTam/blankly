@@ -19,15 +19,6 @@
 import copy
 from multiprocessing import Manager, Process
 
-try:
-    from binance.client import Client as Binance_API
-except ImportError as _e:
-    pass
-try:
-    from blankly.exchanges.interfaces.coinbase_pro.coinbase_pro_api import API as CoinbaseProAPI
-except ImportError as _e:
-    pass
-
 import blankly
 from blankly.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
 from blankly.exchanges.managers.orderbook_manager import OrderbookManager
@@ -44,8 +35,7 @@ class BlanklyBot:
     orderbook_manager: OrderbookManager
     ticker_manager: TickerManager
     interface: ABCExchangeInterface
-    coinbase_pro_direct: "CoinbaseProAPI"
-    binance_direct: "Binance_API"
+    # coinbase_pro_direct: "CoinbaseProAPI"
 
     def __init__(self):
         """
@@ -65,7 +55,7 @@ class BlanklyBot:
         """
         This function is populated by the exchange.
         Args:
-            exchange_type (str): Type of exchange i.e "binance" or "coinbase_pro"
+            exchange_type (str): Type of exchange i.e "coinbase_pro"
             currency_pair: Identifier for the coin market, i.e "BTC-USD"
             user_preferences: Dictionary with the defined preferences
             initial_state: Information about the account the model is defaulted to running on
@@ -81,7 +71,6 @@ class BlanklyBot:
         self.symbol = currency_pair
         self.direct_calls = interface.get_calls()
         self.coinbase_pro_direct = self.direct_calls
-        self.binance_direct = self.direct_calls
 
     def is_running(self):
         """

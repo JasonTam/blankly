@@ -10,38 +10,14 @@
     "coinbase_pro": {
       "cash": "USD"
     },
-    "binance": {
-      "cash": "USDT",
-      "binance_tld": "us"
-    },
-    "binance_futures": {
-      "cash": "USDT"
-    },
     "alpaca": {
       "websocket_stream": "iex",
       "cash": "USD",
       "enable_shorting": true,
       "use_yfinance": false
     },
-    "oanda": {
-      "cash": "USD"
-    },
-    "okx": {
-      "cash": "USDT"
-    },
     "keyless": {
       "cash": "USD"
-    },
-    "kucoin": {
-      "cash": "USDT"
-    },
-    "ftx": {
-      "cash": "USD",
-      "ftx_tld": "us"
-    },
-    "ftx_futures": {
-      "cash": "USD",
-      "ftx_tld": "com"
     },
     "paper": {
       "price_source": "api"

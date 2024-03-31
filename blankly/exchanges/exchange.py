@@ -23,19 +23,14 @@ from blankly.exchanges.abc_exchange import ABCExchange
 from blankly.exchanges.auth.utils import write_auth_cache
 from blankly.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
 from blankly.exchanges.interfaces.coinbase_pro.coinbase_pro_interface import CoinbaseProInterface
-from blankly.exchanges.interfaces.oanda.oanda_interface import OandaInterface
-from blankly.exchanges.interfaces.ftx.ftx_interface import FTXInterface
 from blankly.exchanges.interfaces.alpaca.alpaca_interface import AlpacaInterface
-from blankly.exchanges.interfaces.binance.binance_interface import BinanceInterface
-from blankly.exchanges.interfaces.kucoin.kucoin_interface import KucoinInterface
-from blankly.exchanges.interfaces.okx.okx_interface import OkxInterface
 
 
 class Exchange(ABCExchange, abc.ABC):
     interface: ABCExchangeInterface
 
     def __init__(self, exchange_type, portfolio_name, preferences_path):
-        self.__type = exchange_type  # coinbase_pro, binance, alpaca, oanda, ftx
+        self.__type = exchange_type  # coinbase_pro, alpaca
         self.__name = portfolio_name  # my_cool_portfolio
 
         # Make a public version of portfolio name
@@ -70,18 +65,8 @@ class Exchange(ABCExchange, abc.ABC):
         self.calls = calls
         if self.__type == "coinbase_pro":
             self.interface = CoinbaseProInterface(self.__type, calls)
-        elif self.__type == "binance":
-            self.interface = BinanceInterface(self.__type, calls)
         elif self.__type == "alpaca":
             self.interface = AlpacaInterface(self.__type, calls)
-        elif self.__type == "ftx":
-            self.interface = FTXInterface(self.__type, calls)
-        elif self.__type == "oanda":
-            self.interface = OandaInterface(self.__type, calls)
-        elif self.__type == "kucoin":
-            self.interface = KucoinInterface(self.__type, calls)
-        elif self.__type == "okx":
-            self.interface = OkxInterface(self.__type, calls)
 
         blankly.reporter.export_used_exchange(self.__type)
 

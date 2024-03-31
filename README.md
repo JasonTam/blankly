@@ -58,13 +58,10 @@ from blankly import Alpaca, CoinbasePro
 
 stocks = Alpaca()
 crypto = CoinbasePro()
-futures = BinanceFutures()
 
 # Easily perform the same actions across exchanges & asset types
 stocks.interface.market_order('AAPL', 'buy', 1)
 crypto.interface.market_order('BTC-USD', 'buy', 1)
-# Full futures feature set
-futures.interface.get_hedge_mode()
 ```
 
 ### Backtest your trades, events, websockets, and custom data
@@ -174,19 +171,7 @@ For more info, and ways to do more advanced things, check out our [getting start
 | Exchange            | Live Trading | Websockets | Paper Trading | Backtesting |
 | ------------------- |--------------| ---------- |--------------| ----------- |
 | Coinbase Pro        | 🟢           | 🟢          | 🟢           | 🟢           |
-| Binance             | 🟢           | 🟢          | 🟢           | 🟢           |
 | Alpaca              | 🟢           | 🟢          | 🟢           | 🟢           |
-| OANDA               | 🟢           |  | 🟢           | 🟢           |
-| FTX                 | 🟢           | 🟢          | 🟢           | 🟢           |
-| KuCoin              | 🟢           | 🟢        | 🟢           | 🟢           |
-| Binance Futures | 🟢 | 🟢 | 🟢 | 🟢 |
-| FTX Futures | 🟡 | 🟡 | 🟢 | 🟢 |
-| Okx | 🟢 | 🟢 | 🟢 | 🟢 |
-| Kraken              | 🟡           | 🟡          | 🟡           | 🟡           |
-| Keyless Backtesting |              |            |              | 🟢           |
-| TD Ameritrade       | 🔴           | 🔴          | 🔴           | 🔴           |
-| Webull              | 🔴           | 🔴          | 🔴           | 🔴           |
-| Robinhood           | 🔴           | 🔴          | 🔴           | 🔴           |
 
 
 🟢  = working

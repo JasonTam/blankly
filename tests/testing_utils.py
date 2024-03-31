@@ -19,20 +19,10 @@ import datetime
 
 
 def get_valid_symbol(exchange: str):
-    if exchange == 'binance':
-        return 'BTC-USDT'
-    elif exchange == 'okx':
-        return 'ADA-USDT'
-    elif exchange == 'coinbase_pro':
+    if exchange == 'coinbase_pro':
         return 'BTC-USD'
     elif exchange == 'alpaca':
         return 'AAPL'
-    elif exchange == 'oanda':
-        return 'EUR-USD'
-    elif exchange == 'ftx':
-        return 'BTC-USD'
-    elif exchange == 'kucoin':
-        return 'ETH-USDT'
     else:
         raise LookupError("Specified exchange not found.")
 

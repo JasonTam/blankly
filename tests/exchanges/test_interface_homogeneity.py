@@ -47,32 +47,10 @@ def compare_responses(response_list, force_exchange_specific=True):
 class InterfaceHomogeneity(unittest.TestCase):
     paper_trade_coinbase_pro_interface = None
     paper_trade_coinbase_pro = None
-    paper_trade_binance_interface_data = None
-    paper_trade_binance_data = None
-    paper_trade_binance_interface = None
-    paper_trade_binance = None
-    FTX_Interface = None
-    Oanda = None
-    Oanda_Interface = None
     Alpaca_Interface = None
     alpaca = None
-    Binance_data = None
-    Kucoin_Interface_data = None
-    Binance_Interface = None
-    Binance = None
-    Binance_Interface_data = None
-    Kucoin_data = None
-    Kucoin_Interface = None
-    Okx_data = None
-    Okx_Interface = None
-    Okx_Interface_Data = None
-    Coinbase_Pro_Interface = None
-    Kucoin = None
-    Coinbase_Pro = None
-    Okx = None
     data_interfaces = None
     interfaces = None
-    FTX = None
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -86,47 +64,6 @@ class InterfaceHomogeneity(unittest.TestCase):
         cls.Coinbase_Pro_Interface = cls.Coinbase_Pro.get_interface()
         cls.interfaces.append(cls.Coinbase_Pro_Interface)
 
-        # Okex definition and appending
-        cls.Okx = blankly.Okx(portfolio_name="okx sandbox portfolio",
-                              keys_path='./tests/config/keys.json',
-                              settings_path="./tests/config/settings.json")
-        cls.Okx_Interface = cls.Okx.get_interface()
-        cls.interfaces.append(cls.Okx_Interface)
-
-        cls.Okx_data = blankly.Okx(portfolio_name="okx data portfolio",
-                                   keys_path='./tests/config/keys.json',
-                                   settings_path="./tests/config/settings.json")
-        cls.Okx_Interface_data = cls.Okx_data.get_interface()
-        cls.data_interfaces.append(cls.Okx_Interface_data)
-
-        # Kucoin definition and appending
-        cls.Kucoin = blankly.Kucoin(portfolio_name="KC Sandbox Portfolio",
-                                    keys_path='./tests/config/keys.json',
-                                    settings_path="./tests/config/settings.json")
-        cls.Kucoin_Interface = cls.Kucoin.get_interface()
-        cls.interfaces.append(cls.Kucoin_Interface)
-        cls.data_interfaces.append(cls.Kucoin_Interface)
-
-        cls.Kucoin_data = blankly.Kucoin(portfolio_name="KC Data Keys",
-                                         keys_path='./tests/config/keys.json',
-                                         settings_path="./tests/config/settings.json")
-        cls.Kucoin_Interface_data = cls.Kucoin_data.get_interface()
-        cls.data_interfaces.append(cls.Kucoin_Interface_data)
-
-        # Binance definition and appending
-        cls.Binance = blankly.Binance(portfolio_name="Spot Test Key",
-                                      keys_path='./tests/config/keys.json',
-                                      settings_path="./tests/config/settings.json")
-        cls.Binance_Interface = cls.Binance.get_interface()
-        cls.interfaces.append(cls.Binance_Interface)
-
-        # Create a Binance interface that is specifically for grabbing data
-        cls.Binance_data = blankly.Binance(portfolio_name="Data Key",
-                                           keys_path='./tests/config/keys.json',
-                                           settings_path="./tests/config/settings.json")
-        cls.Binance_Interface_data = cls.Binance_data.get_interface()
-        cls.data_interfaces.append(cls.Binance_Interface_data)
-
         # alpaca definition and appending
         cls.alpaca = blankly.Alpaca(portfolio_name="alpaca test portfolio",
                                     keys_path='./tests/config/keys.json',
@@ -134,31 +71,6 @@ class InterfaceHomogeneity(unittest.TestCase):
         cls.Alpaca_Interface = cls.alpaca.get_interface()
         cls.interfaces.append(cls.Alpaca_Interface)
         cls.data_interfaces.append(cls.Alpaca_Interface)
-
-        # Oanda definition and appending
-        cls.Oanda = blankly.Oanda(portfolio_name="oanda test portfolio",
-                                  keys_path='./tests/config/keys.json',
-                                  settings_path="./tests/config/settings.json")
-        cls.Oanda_Interface = cls.Oanda.get_interface()
-        cls.interfaces.append(cls.Oanda_Interface)
-        cls.data_interfaces.append(cls.Oanda_Interface)
-
-        cls.FTX = blankly.FTX(portfolio_name="Main Account",
-                              keys_path='./tests/config/keys.json',
-                              settings_path="./tests/config/settings.json")
-        cls.FTX_Interface = cls.FTX.get_interface()
-        cls.interfaces.append(cls.FTX_Interface)
-        cls.data_interfaces.append(cls.FTX_Interface)
-
-        # Paper trade wraps binance
-        cls.paper_trade_binance = blankly.PaperTrade(cls.Binance)
-        cls.paper_trade_binance_interface = cls.paper_trade_binance.get_interface()
-        cls.interfaces.append(cls.paper_trade_binance_interface)
-
-        # Create another for data keys
-        cls.paper_trade_binance_data = blankly.PaperTrade(cls.Binance_data)
-        cls.paper_trade_binance_interface_data = cls.paper_trade_binance_data.get_interface()
-        cls.data_interfaces.append(cls.paper_trade_binance_interface_data)
 
         # Another wraps coinbase pro
         cls.paper_trade_coinbase_pro = blankly.PaperTrade(cls.Coinbase_Pro)
@@ -187,11 +99,6 @@ class InterfaceHomogeneity(unittest.TestCase):
                 # These are just testing for error
                 availability_results.append(self.interfaces[i].account.AAPL.available)
                 availability_results.append(self.interfaces[i].account.AAPL.hold)
-            elif self.interfaces[i].get_exchange_type() == "oanda":
-                responses.append(self.interfaces[i].get_account()['USD'])
-                responses.append(self.interfaces[i].get_account('USD'))
-                responses.append(self.interfaces[i].account.USD)
-                responses.append(self.interfaces[i].account['USD'])
             else:
                 responses.append(self.interfaces[i].get_account()['BTC'])
                 responses.append(self.interfaces[i].get_account('BTC'))
@@ -219,9 +126,7 @@ class InterfaceHomogeneity(unittest.TestCase):
     def test_market_order(self):
 
         # Make sure to buy back the funds we're loosing from fees - minimum balance of .1 bitcoin
-        btc_account = self.Binance_Interface.get_account(symbol="BTC")['available']
-        if btc_account < .1:
-            self.Binance_Interface.market_order("BTC-USDT", "buy", .1)
+        pass
 
         # These are the objects generated by blankly
         order_responses = []
@@ -232,18 +137,7 @@ class InterfaceHomogeneity(unittest.TestCase):
 
         for i in self.interfaces:
             type_ = i.get_exchange_type()
-            if type_ == "ftx":
-                continue
-            if type_ == 'oanda':
-                # Non fractional exchanges have to be sent here
-                size = 1
-
-                if not forex_market_open():
-                    continue
-            elif type_ == 'okx':
-                size = 1
-            else:
-                size = .01
+            size = .01
 
             # Grab the account values before
             initial_value = i.get_account(get_base_asset(get_valid_symbol(type_)))
@@ -326,29 +220,13 @@ class InterfaceHomogeneity(unittest.TestCase):
 
         limits += evaluate_limit_order(self.Alpaca_Interface, 'AAPL', 10, 100000, 1)
 
-        binance_limits = self.Binance_Interface.get_order_filter('BTC-USDT')["limit_order"]
-        limits += evaluate_limit_order(self.Binance_Interface, 'BTC-USDT', int(binance_limits['min_price'] + 100),
-                                       int(binance_limits['max_price'] - 100), .01)
-
-        limits += evaluate_limit_order(self.Coinbase_Pro_Interface, 'BTC-USD', .01, 100000, 1)
-
-        limits += evaluate_limit_order(self.Kucoin_Interface, 'ETH-USDT', .01, 100000, 1)
-
-        limits += evaluate_limit_order(self.Oanda_Interface, 'EUR-USD', .01, 100000, 1)
-
-        limits += evaluate_limit_order(self.Okx_Interface, 'BTC-USDT', 0.50, 100000, .01)
-
         responses = []
         status = []
         cancels = []
 
         open_orders = {
             'coinbase_pro': self.Coinbase_Pro_Interface.get_open_orders('BTC-USD'),
-            'binance': self.Binance_Interface.get_open_orders('BTC-USDT'),
-            'kucoin': self.Kucoin_Interface.get_open_orders('ETH-USDT'),
             'alpaca': self.Alpaca_Interface.get_open_orders('AAPL'),
-            'oanda': self.Oanda_Interface.get_open_orders('EUR-USD'),
-            'okx': self.Okx_Interface.get_open_orders('BTC-USDT')
         }
 
         # Simple test to ensure that some degree of orders have been placed
@@ -357,11 +235,7 @@ class InterfaceHomogeneity(unittest.TestCase):
 
         # Just scan through both simultaneously to reduce code copying
         all_orders = open_orders['coinbase_pro']
-        all_orders = all_orders + open_orders['binance']
-        all_orders = all_orders + open_orders['okx']
-        all_orders = all_orders + open_orders['kucoin']
         all_orders = all_orders + open_orders['alpaca']
-        all_orders = all_orders + open_orders['oanda']
 
         # Filter for limit orders
         open_orders = []
@@ -388,14 +262,6 @@ class InterfaceHomogeneity(unittest.TestCase):
         self.assertTrue(compare_responses(responses))
         self.assertTrue(compare_responses(status))
 
-        cancels.append(self.Binance_Interface.cancel_order('BTC-USDT', sorted_orders['binance']['buy'].get_id()))
-        cancels.append(self.Binance_Interface.cancel_order('BTC-USDT', sorted_orders['binance']['sell'].get_id()))
-
-        cancels.append(self.Kucoin_Interface.cancel_order('ETH-USDT', sorted_orders['kucoin']['buy'].get_id()))
-        cancels.append(self.Kucoin_Interface.cancel_order('ETH-USDT', sorted_orders['kucoin']['sell'].get_id()))
-        cancels.append(self.Okx_Interface.cancel_order('BTC-USDT', sorted_orders['okx']['buy'].get_id()))
-        cancels.append(self.Okx_Interface.cancel_order('BTC-USDT', sorted_orders['okx']['sell'].get_id()))
-
         cancels.append(self.Coinbase_Pro_Interface.cancel_order('BTC-USD',
                                                                 sorted_orders['coinbase_pro']['buy'].get_id()))
         cancels.append(self.Coinbase_Pro_Interface.cancel_order('BTC-USD',
@@ -403,9 +269,6 @@ class InterfaceHomogeneity(unittest.TestCase):
 
         cancels.append(self.Alpaca_Interface.cancel_order('AAPL', sorted_orders['alpaca']['buy'].get_id()))
         cancels.append(self.Alpaca_Interface.cancel_order('AAPL', sorted_orders['alpaca']['sell'].get_id()))
-
-        cancels.append(self.Oanda_Interface.cancel_order('EUR-USD', sorted_orders['oanda']['buy'].get_id()))
-        cancels.append(self.Oanda_Interface.cancel_order('EUR-USD', sorted_orders['oanda']['sell'].get_id()))
 
         self.assertTrue(compare_responses(cancels, force_exchange_specific=False))
 
@@ -431,8 +294,6 @@ class InterfaceHomogeneity(unittest.TestCase):
 
         limits += self.evaluate_tp_sl_order(sorted_orders, self.Coinbase_Pro_Interface, 'take_profit', 'BTC-USD',
                                             100000, 1)
-        limits += self.evaluate_tp_sl_order(sorted_orders, self.Kucoin_Interface, 'take_profit', 'ETH-USDT', 100000,
-                                            1)
 
         responses = []
         status = []
@@ -440,7 +301,6 @@ class InterfaceHomogeneity(unittest.TestCase):
 
         open_orders = {
             'coinbase_pro': self.Coinbase_Pro_Interface.get_open_orders('BTC-USD'),
-            'kucoin': self.Kucoin_Interface.get_open_orders('ETH-USDT'),
             'alpaca': self.Alpaca_Interface.get_open_orders('AAPL'),
         }
 
@@ -450,7 +310,6 @@ class InterfaceHomogeneity(unittest.TestCase):
 
         # Just scan through both simultaneously to reduce code copying
         all_orders = open_orders['coinbase_pro']
-        all_orders = all_orders + open_orders['kucoin']
         all_orders = all_orders + open_orders['alpaca']
 
         # Filter for limit orders
@@ -478,7 +337,6 @@ class InterfaceHomogeneity(unittest.TestCase):
         self.assertTrue(compare_responses(responses))
         self.assertTrue(compare_responses(status))
 
-        cancels.append(self.Kucoin_Interface.cancel_order('ETH-USDT', sorted_orders['kucoin']['sell'].get_id()))
         cancels.append(self.Coinbase_Pro_Interface.cancel_order('BTC-USD',
                                                                 sorted_orders['coinbase_pro']['sell'].get_id()))
         cancels.append(self.Alpaca_Interface.cancel_order('AAPL', sorted_orders['alpaca']['sell'].get_id()))
@@ -522,7 +380,6 @@ class InterfaceHomogeneity(unittest.TestCase):
 
         limits += self.evaluate_tp_sl_order(sorted_orders, self.Coinbase_Pro_Interface, 'stop_loss', 'BTC-USD', 0.01,
                                             1)
-        limits += self.evaluate_tp_sl_order(sorted_orders, self.Kucoin_Interface, 'stop_loss', 'ETH-USDT', 0.01, 1)
 
         responses = []
         status = []
@@ -530,7 +387,6 @@ class InterfaceHomogeneity(unittest.TestCase):
 
         open_orders = {
             'coinbase_pro': self.Coinbase_Pro_Interface.get_open_orders('BTC-USD'),
-            'kucoin': self.Kucoin_Interface.get_open_orders('ETH-USDT'),
             'alpaca': self.Alpaca_Interface.get_open_orders('AAPL'),
         }
 
@@ -540,7 +396,6 @@ class InterfaceHomogeneity(unittest.TestCase):
 
         # Just scan through both simultaneously to reduce code copying
         all_orders = open_orders['coinbase_pro']
-        all_orders = all_orders + open_orders['kucoin']
         all_orders = all_orders + open_orders['alpaca']
 
         # Filter for limit orders
@@ -568,7 +423,6 @@ class InterfaceHomogeneity(unittest.TestCase):
         self.assertTrue(compare_responses(responses))
         self.assertTrue(compare_responses(status))
 
-        cancels.append(self.Kucoin_Interface.cancel_order('ETH-USDT', sorted_orders['kucoin']['sell'].get_id()))
         cancels.append(self.Coinbase_Pro_Interface.cancel_order('BTC-USD',
                                                                 sorted_orders['coinbase_pro']['sell'].get_id()))
         cancels.append(self.Alpaca_Interface.cancel_order('AAPL', sorted_orders['alpaca']['sell'].get_id()))
@@ -617,8 +471,6 @@ class InterfaceHomogeneity(unittest.TestCase):
         for i in self.data_interfaces:
             type_ = i.get_exchange_type()
 
-            if type_ == 'okx' or type_ == 'kucoin':
-                continue
             valid_symbol = get_valid_symbol(type_)
             response = i.history(valid_symbol, 150, resolution='1d')
 
@@ -643,7 +495,7 @@ class InterfaceHomogeneity(unittest.TestCase):
 
         end_date_str = str(end_date.date())
 
-        # This won't run until the fourth day of the month because of binance
+        # This won't run until the fourth day of the month because of ???
         if arbitrary_date.month == end_date.month - 1:
             for i in self.data_interfaces:
                 valid_symbol = get_valid_symbol(i.get_exchange_type())
@@ -674,9 +526,6 @@ class InterfaceHomogeneity(unittest.TestCase):
 
         for i in self.data_interfaces:
             valid_symbol = get_valid_symbol(i.get_exchange_type())
-            # skip okx and kucoin because bad
-            if i.get_exchange_type() == 'okx' or i.get_exchange_type() == 'kucoin':
-                continue
             responses.append(i.history(valid_symbol, resolution='1h', start_date=start, end_date=stop))
 
         for idx, resp in enumerate(responses):
@@ -699,11 +548,8 @@ class InterfaceHomogeneity(unittest.TestCase):
         for i in self.data_interfaces:
             type_ = i.get_exchange_type()
 
-            if type_ == 'okx':
-                continue
-
             # Exclude alpaca currently because the trading hours make it unreliable
-            if not (type_ == "alpaca" or type_ == 'oanda'):
+            if not (type_ == "alpaca"):
                 responses.append(i.get_product_history(get_valid_symbol(type_),
                                                        intervals_ago,
                                                        current_time,

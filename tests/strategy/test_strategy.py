@@ -60,11 +60,7 @@ class StrategyTest(unittest.TestCase):
                   'settings_path': "./tests/config/settings.json"}
 
         self.exchanges = [
-            blankly.Kucoin(**kwargs),
-            blankly.FTX(**kwargs),
             blankly.CoinbasePro(**kwargs),
-            blankly.Binance(**kwargs, portfolio_name='Data Key'),
-            blankly.Oanda(**kwargs),
             blankly.Alpaca(**kwargs)
         ]
 

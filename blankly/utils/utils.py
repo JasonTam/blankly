@@ -41,39 +41,11 @@ default_general_settings = {
         "coinbase_pro": {
             "cash": "USD"
         },
-        "binance": {
-            "cash": "USDT",
-            "binance_tld": "us"
-        },
-        "binance_futures": {
-            "cash": "USDT",
-            "margin_type": "USDT-M"
-        },
         "alpaca": {
             "websocket_stream": "iex",
             "cash": "USD",
             "enable_shorting": True,
             "use_yfinance": False
-        },
-        "oanda": {
-            "cash": "USD"
-        },
-        "okx": {
-            "cash": "USDT"
-        },
-        "keyless": {
-            "cash": "USD"
-        },
-        "kucoin": {
-            "cash": "USDT"
-        },
-        "ftx": {
-            "cash": "USD",
-            "ftx_tld": "us"
-        },
-        "ftx_futures": {
-            "cash": "USD",
-            "ftx_tld": "com"
         },
         "paper": {
               "price_source": "api"
@@ -326,25 +298,8 @@ def iso8601_from_epoch(epoch) -> str:
 
 
 def to_blankly_symbol(symbol, exchange, quote_guess=None) -> str:
-    if exchange == "binance":
-        if quote_guess is not None:
-            index = int(symbol.find(quote_guess))
-            symbol = symbol[0:index]
-            return symbol + "-" + quote_guess
-        else:
-            # Try your best to try to parse anyway
-            quotes = ['BNB', 'BTC', 'TRX', 'XRP', 'ETH', 'USDT', 'USD', 'BUSD', 'AUD', 'BRL', 'EUR', 'GBP', 'RUB',
-                      'TRY', 'TUSD', 'USDC', 'PAX', 'BIDR', 'DAI', 'IDRT', 'UAH', 'NGN', 'VAI', 'BVND']
-            for i in quotes:
-                if __check_ending(symbol, i):
-                    return to_blankly_symbol(symbol, 'binance', quote_guess=i)
-            raise LookupError("Unable to parse binance coin id of: " + str(symbol))
-
     if exchange == "coinbase_pro":
         return symbol
-
-    if exchange == "ftx":
-        return symbol.replace("/", "-")
 
     return symbol
 
@@ -355,14 +310,10 @@ def __check_ending(full_string, checked_ending) -> bool:
 
 
 def to_exchange_symbol(blankly_symbol, exchange):
-    if exchange == "binance":
-        return blankly_symbol.replace('-', '')
     if exchange == "alpaca":
         return get_base_asset(blankly_symbol)
-    if exchange == "coinbase_pro" or exchange == "kucoin":
+    if exchange == "coinbase_pro":
         return blankly_symbol
-    if exchange == 'ftx':
-        return blankly_symbol.replace("-", "/")
     return blankly_symbol
 
 

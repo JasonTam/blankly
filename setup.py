@@ -41,7 +41,6 @@ setup(
     ],
     extras_require = {
         'alpaca':  ["alpaca-trade-api >= 1.4.2"],
-        'binance':  ["python-binance >= 1.0.15"],
         'indicators':  ["newnewtulipy >= 0.4.6.3"],
 
     },

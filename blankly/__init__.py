@@ -20,14 +20,6 @@ import blankly.data as data
 
 _missing_dependencies = []
 try:
-    from blankly.exchanges.interfaces.coinbase_pro.coinbase_pro import CoinbasePro
-except ImportError as _e:
-    pass
-try:
-    from blankly.exchanges.interfaces.binance.binance import Binance
-except ImportError as _e:
-    pass
-try:
     from blankly.exchanges.interfaces.alpaca.alpaca import Alpaca
 except ImportError as _e:
     pass
@@ -59,11 +51,6 @@ import blankly.indicators as indicators
 from blankly.utils import time_builder
 
 from blankly.enums import Side, OrderType, OrderStatus, TimeInForce
-try:
-    from blankly.exchanges.interfaces.binance_futures.binance_futures import BinanceFutures
-    from blankly.exchanges.interfaces.ftx_futures.ftx_futures import FTXFutures
-except:
-    pass
 
 from blankly.frameworks.strategy import FuturesStrategy
 from blankly.frameworks.strategy import FuturesStrategyState

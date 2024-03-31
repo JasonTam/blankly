@@ -32,7 +32,7 @@ class FuturesExchange(ABCBaseExchange, abc.ABC):
         info_print("Live futures trading is untested due to US regulations - this prevents blankly developers "
                    "from integrating with these exchanges. We are looking for someone who is interested in helping us "
                    "create & test our integrations.")
-        self.exchange_type = exchange_type  # binance, ftx
+        self.exchange_type = exchange_type  # coinbase
         self.portfolio_name = portfolio_name  # my_cool_portfolio
         self.preferences = blankly.utils.load_user_preferences(
             preferences_path)

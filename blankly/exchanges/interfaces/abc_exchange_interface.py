@@ -34,7 +34,7 @@ class ABCExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
         """
         Create an abstract exchange interface
         Args:
-            exchange_name (str): Define exchange name ex: 'binance' or 'coinbase_pro'
+            exchange_name (str): Define exchange name ex: 'coinbase_pro'
             authenticated_api (obj): Authenticated direct calls object
         """
         pass
@@ -53,7 +53,7 @@ class ABCExchangeInterface(ABCBaseExchangeInterface, abc.ABC):
     @abc.abstractmethod
     def get_exchange_type(self):
         """
-        Get the type of exchange ex: "coinbase_pro" or "binance"
+        Get the type of exchange ex: "coinbase_pro"
 
         Returns:
              A string that corresponds to the type of exchange

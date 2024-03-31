@@ -59,8 +59,7 @@ class TermColors:
     UNDERLINE = '\033[4m'
 
 
-supported_exchanges = ['binance.com', 'binance.us',
-                       'coinbase_pro', 'alpaca', 'ftx', 'oanda', 'getting-started']
+supported_exchanges = ['coinbase_pro', 'alpaca', 'getting-started']
 
 
 def choose_option(choice: str, options: list, descriptions: list):
@@ -665,10 +664,6 @@ def main():
             return
 
         tld = 'com'
-        if user_defined_exchange[0:7] == 'binance':
-            # Find if it's .us if needed
-            tld = user_defined_exchange[8:]
-            user_defined_exchange = 'binance'
 
         exchange_config = {
             'settings.json': 'https://raw.githubusercontent.com/blankly-finance/examples/main/configs/settings.json',
@@ -691,15 +686,11 @@ def main():
         print("Downloading settings defaults...")
         settings = requests.get(exchange_config['settings.json']).json()
         # Make sure we write the tld into the settings
-        settings['settings']['binance']['binance_tld'] = exchange_config['tld']
         create_and_write_file('settings.json', json.dumps(settings, indent=2))
 
         # Directly download backtest.json
         print("Downloading backtest defaults...")
         backtest = requests.get(exchange_config['backtest_usd.json']).json()
-        if user_defined_exchange == 'kucoin' or user_defined_exchange == 'binance':
-            # USDT exchanges
-            backtest['settings']['quote_account_value_in'] = 'USDT'
         create_and_write_file('backtest.json', json.dumps(backtest, indent=2))
 
         # Directly download a rsi bot

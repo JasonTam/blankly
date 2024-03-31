@@ -33,7 +33,7 @@ class ExchangeInterface(ABCExchangeInterface, abc.ABC):
         self.user_preferences = utils.load_user_preferences(preferences_path)
 
         self.exchange_properties = None
-        # Some exchanges like binance will not return a value of 0.00 if there is no balance
+        # Some exchanges will not return a value of 0.00 if there is no balance
         self.available_currencies = {}
 
         self.needed = {
@@ -219,7 +219,6 @@ class ExchangeInterface(ABCExchangeInterface, abc.ABC):
             symbol (Optional): Filter by particular symbol
 
         Coinbase Pro: get_account
-        binance: get_account["balances"]
         """
 
         if symbol is not None:
@@ -243,10 +242,7 @@ class ExchangeInterface(ABCExchangeInterface, abc.ABC):
 
     @staticmethod
     def homogenize_order_status(exchange, status):
-        if exchange == "binance":
-            if status == "new":
-                return "open"
-        elif exchange == 'alpaca':
+        if exchange == 'alpaca':
             if status == 'accepted':
                 return 'accepted'
             if status == 'new':

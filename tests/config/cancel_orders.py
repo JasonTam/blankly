@@ -2,11 +2,7 @@ import blankly
 
 if __name__ == "__main__":
     exchanges = [
-        blankly.Alpaca(),
-        blankly.Binance(),
-        blankly.CoinbasePro(),
-        blankly.Kucoin(),
-        blankly.Oanda()
+        blankly.Alpaca()
     ]
 
     for i in exchanges:
