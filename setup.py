@@ -32,16 +32,19 @@ setup(
     install_requires=[
         'questionary >= 1.10.0',
         'yaspin >= 2.1.0',
-        'alpaca-trade-api >= 1.4.2',
         'bokeh >= 2.4.2',
         'dateparser >= 1.1.0',
-        'newnewtulipy >= 0.4.6.3',
         'numpy >= 1.21.4',
         'pandas >= 1.1.5',
-        'python-binance >= 1.0.15',
         'requests >= 2.26.0',
         'websocket-client >= 1.2.1',
     ],
+    extras_require = {
+        'alpaca':  ["alpaca-trade-api >= 1.4.2"],
+        'binance':  ["python-binance >= 1.0.15"],
+        'indicators':  ["newnewtulipy >= 0.4.6.3"],
+
+    },
     classifiers=[
         # Possible: "3 - Alpha", "4 - Beta" or "5 - Production/Stable"
         'Development Status :: 4 - Beta',
