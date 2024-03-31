@@ -17,13 +17,21 @@
 """
 import blankly.utils.utils
 import blankly.data as data
-from blankly.exchanges.interfaces.coinbase_pro.coinbase_pro import CoinbasePro
-from blankly.exchanges.interfaces.binance.binance import Binance
-from blankly.exchanges.interfaces.alpaca.alpaca import Alpaca
-from blankly.exchanges.interfaces.oanda.oanda import Oanda
-from blankly.exchanges.interfaces.kucoin.kucoin import Kucoin
-from blankly.exchanges.interfaces.ftx.ftx import FTX
-from blankly.exchanges.interfaces.okx.okx import Okx
+
+_missing_dependencies = []
+try:
+    from blankly.exchanges.interfaces.coinbase_pro.coinbase_pro import CoinbasePro
+except ImportError as _e:
+    pass
+try:
+    from blankly.exchanges.interfaces.binance.binance import Binance
+except ImportError as _e:
+    pass
+try:
+    from blankly.exchanges.interfaces.alpaca.alpaca import Alpaca
+except ImportError as _e:
+    pass
+
 from blankly.exchanges.interfaces.paper_trade.paper_trade import PaperTrade
 from blankly.exchanges.interfaces.keyless.keyless import KeylessExchange
 from blankly.frameworks.strategy import Strategy as Strategy
@@ -36,16 +44,27 @@ from blankly.exchanges.managers.ticker_manager import TickerManager
 from blankly.exchanges.managers.orderbook_manager import OrderbookManager
 from blankly.exchanges.managers.general_stream_manager import GeneralManager
 from blankly.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface as Interface
-from blankly.frameworks.multiprocessing.blankly_bot import BlanklyBot
+
+try:
+    from blankly.frameworks.multiprocessing.blankly_bot import BlanklyBot
+except:
+    pass
+
+
 from blankly.utils.utils import trunc
 import blankly.utils.utils as utils
 from blankly.utils.scheduler import Scheduler
 import blankly.indicators as indicators
+
 from blankly.utils import time_builder
 
 from blankly.enums import Side, OrderType, OrderStatus, TimeInForce
-from blankly.exchanges.interfaces.binance_futures.binance_futures import BinanceFutures
-from blankly.exchanges.interfaces.ftx_futures.ftx_futures import FTXFutures
+try:
+    from blankly.exchanges.interfaces.binance_futures.binance_futures import BinanceFutures
+    from blankly.exchanges.interfaces.ftx_futures.ftx_futures import FTXFutures
+except:
+    pass
+
 from blankly.frameworks.strategy import FuturesStrategy
 from blankly.frameworks.strategy import FuturesStrategyState
 
