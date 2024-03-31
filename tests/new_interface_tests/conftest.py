@@ -1,11 +1,8 @@
 from _pytest.python import Metafunc
 
 from blankly.exchanges.interfaces.abc_base_exchange_interface import ABCBaseExchangeInterface
-from blankly.exchanges.interfaces.futures_exchange_interface import FuturesExchangeInterface
 
-from blankly.exchanges.futures.futures_exchange import FuturesExchange
-
-from tests.new_interface_tests.test_utils import FUTURES_EXCHANGES, get_symbols, SPOT_EXCHANGES
+from tests.new_interface_tests.test_utils import get_symbols, SPOT_EXCHANGES
 
 
 def gen_id(arg):
@@ -24,12 +21,10 @@ def pytest_generate_tests(metafunc: Metafunc):
 
     interface_param = interface_params[0]
 
-    if interface_param == 'futures_interface':
-        interfaces = [ex.interface for ex in FUTURES_EXCHANGES]
-    elif interface_param == 'spot_interface':
+    if interface_param == 'spot_interface':
         interfaces = [ex.interface for ex in SPOT_EXCHANGES]
     elif interface_param == 'interface':
-        interfaces = [ex.interface for ex in FUTURES_EXCHANGES + SPOT_EXCHANGES]
+        interfaces = [ex.interface for ex in SPOT_EXCHANGES]
     else:
         raise Exception('invalid interface type: ' + interface_param)
 

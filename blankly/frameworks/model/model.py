@@ -1,5 +1,5 @@
 """
-    An improved strategy simulation layer built for spot and futures trading
+    An improved strategy simulation layer built for spot trading
     Copyright (C) 2021  Emerson Dove
 
     This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,6 @@ import abc
 import typing
 
 from blankly.exchanges.abc_base_exchange import ABCBaseExchange
-from blankly.exchanges.futures.futures_exchange import FuturesExchange
 from blankly.exchanges.interfaces.paper_trade.backtest_controller import BackTestController, BacktestResult
 from blankly.exchanges.interfaces.abc_exchange_interface import ABCExchangeInterface
 from blankly.exchanges.interfaces.paper_trade.abc_backtest_controller import ABCBacktestController
@@ -36,8 +35,6 @@ class Model(abc.ABC):
         self.__exchange_cache = self.__exchange
         self.is_backtesting = False
 
-        # TODO every instance usage of this uses spot, this should be refactored to give linting for futures or spot
-        #  depending on what people are running
         self.interface: ABCExchangeInterface = exchange.get_interface()
 
         self.has_data = True
@@ -55,8 +52,6 @@ class Model(abc.ABC):
         self.is_backtesting = True
         if isinstance(self.__exchange, Exchange):
             self.__exchange = PaperTrade(self.__exchange)
-        elif isinstance(self.__exchange, FuturesExchange):
-            self.__exchange = FuturesPaperTrade(self.__exchange)
         else:
             raise NotImplementedError
         self.interface = self.__exchange.interface

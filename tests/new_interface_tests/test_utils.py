@@ -6,10 +6,7 @@ from blankly.exchanges.interfaces.exchange_interface import ExchangeInterface
 from blankly.exchanges.interfaces.alpaca.alpaca import Alpaca
 from blankly.exchanges.abc_base_exchange import ABCBaseExchange
 from blankly.exchanges.interfaces.abc_base_exchange_interface import ABCBaseExchangeInterface
-from blankly.exchanges.futures.futures_exchange import FuturesExchange
-from blankly.exchanges.interfaces.futures_exchange_interface import FuturesExchangeInterface
 from blankly.exchanges.interfaces.paper_trade.paper_trade_interface import PaperTradeInterface
-from blankly.exchanges.orders.futures.futures_order import FuturesOrder
 from blankly.exchanges.orders.limit_order import LimitOrder
 from blankly.exchanges.orders.market_order import MarketOrder
 from blankly.utils import utils
@@ -32,8 +29,6 @@ alpaca = Alpaca(portfolio_name="alpaca test portfolio",
                 keys_path='./tests/config/keys.json',
                 settings_path="./tests/config/settings.json")
 
-FUTURES_EXCHANGES = [
-]
 SPOT_EXCHANGES = [
     # PaperTradeInterface deferring to the subinterface get_exchange_type causes problems...
     # TODO ?
@@ -46,7 +41,7 @@ SPOT_EXCHANGES = [
     alpaca,
 ]
 
-for exchange in FUTURES_EXCHANGES + SPOT_EXCHANGES:
+for exchange in SPOT_EXCHANGES:
     # override auto trunc for new tests
     # old tests use the default if auto_truncate is not set, which is False
     exchange.interface.user_preferences['settings']['auto_truncate'] = True
@@ -116,7 +111,7 @@ def compare_values(other_name, other, this, check_values: bool):
         assert this == other, f'comparing to {other_name}: values are not equal.'
 
 
-def wait_till_filled(interface: ABCBaseExchangeInterface, order: Union[FuturesOrder, MarketOrder]):
+def wait_till_filled(interface: ABCBaseExchangeInterface, order: Union[MarketOrder]):
     if isinstance(interface, ExchangeInterface):
         # don't bother, the lack of 'real' order statuses makes this too much of a pain
         time.sleep(1)
@@ -134,62 +129,25 @@ def wait_till_filled(interface: ABCBaseExchangeInterface, order: Union[FuturesOr
 
 
 def place_order(interface: ABCBaseExchangeInterface, symbol: str, side: Side, funds: int, reduce_only: bool = False):
-    if isinstance(interface, FuturesExchangeInterface):
-        product = interface.get_products(symbol)
-        price = interface.get_price(symbol)
-        precision = product['size_precision']
-    else:
-        product = next(p for p in interface.get_products() if p['symbol'] == symbol)
-        price = interface.get_price(symbol)
-        precision = utils.increment_to_precision(product['base_increment'])
+    product = next(p for p in interface.get_products() if p['symbol'] == symbol)
+    price = interface.get_price(symbol)
+    precision = utils.increment_to_precision(product['base_increment'])
     order_size = utils.trunc(funds / price, precision)
 
-    if isinstance(interface, FuturesExchangeInterface):
-        order = interface.market_order(symbol, side, order_size, reduce_only=reduce_only)
-        assert order.symbol == symbol
-        assert 0 <= order.id
-        assert order.status in (OrderStatus.OPEN, OrderStatus.FILLED)
-        assert order.type == OrderType.MARKET
-        assert order.contract_type == ContractType.PERPETUAL
-        assert order.side == side
-        assert order.limit_price == 0
-        assert order.position == PositionMode.BOTH
-        assert order.time_in_force == TimeInForce.GTC
-    else:
-        order = interface.market_order(symbol, side, order_size)
-        assert order.get_symbol() == symbol
-        # TODO these are not properly homogenized for spot markets
-        assert order.get_status()['status'].lower() in ('new', 'open', 'filled', 'done')
-        assert order.get_type().lower() == OrderType.MARKET
-        assert order.get_size() == approx(order_size)
-        assert order.get_side().lower() == side
+    order = interface.market_order(symbol, side, order_size)
+    assert order.get_symbol() == symbol
+    # TODO these are not properly homogenized for spot markets
+    assert order.get_status()['status'].lower() in ('new', 'open', 'filled', 'done')
+    assert order.get_type().lower() == OrderType.MARKET
+    assert order.get_size() == approx(order_size)
+    assert order.get_side().lower() == side
 
     res = wait_till_filled(interface, order)
 
-    if isinstance(interface, FuturesExchangeInterface):
-        assert res.status == OrderStatus.FILLED
-    else:
-        assert res.get_status()["status"].lower() in ('closed', 'filled')
+    assert res.get_status()["status"].lower() in ('closed', 'filled')
 
-    if isinstance(interface, FuturesExchangeInterface):
-        if reduce_only:
-            # 1% tolerance
-            assert res.price <= price * order_size * 1.01
-            assert res.size <= order_size * 1.01
-
-            # set size equal so we can compare
-            order.size = res.size
-        else:
-            assert res.price == approx(price * order_size, rel=0.01)
-            assert res.size == approx(order_size)
-
-        # set price, status equal so we can compare
-        order.price = res.price
-        order.status = res.status
-        assert order == res
-    else:
-        assert res.get_price() == approx(price * order_size, rel=0.01)
-        assert res.get_size() == approx(order_size, rel=0.01)
+    assert res.get_price() == approx(price * order_size, rel=0.01)
+    assert res.get_size() == approx(order_size, rel=0.01)
 
     return order
 
@@ -202,15 +160,6 @@ def buy(interface: ABCBaseExchangeInterface, symbol: str, funds: int = 20, reduc
     return place_order(interface, symbol, Side.BUY, funds, reduce_only)
 
 
-def close_all(futures_interface: FuturesExchangeInterface):
-    for symbol in futures_interface.get_position():
-        close_position(futures_interface, symbol)
-
-    for order in futures_interface.get_open_orders():
-        futures_interface.cancel_order(order.symbol, order.id)
-    assert len(futures_interface.get_position()) == 0
-
-
 def close_position(interface: ABCBaseExchange, symbol: str):
     """
     Exit position
@@ -218,37 +167,18 @@ def close_position(interface: ABCBaseExchange, symbol: str):
         interface: the interface to sell on
         symbol: the symbol to sell
     """
-    if isinstance(interface, FuturesExchangeInterface):
-        position = interface.get_position(symbol)
-        if not position:
-            return
-        if position['size'] < 0:
-            order = interface.market_order(symbol,
-                                           Side.BUY,
-                                           position['size'] * -2,
-                                           reduce_only=True)
-        elif position['size'] > 0:
-            order = interface.market_order(symbol,
-                                           Side.SELL,
-                                           position['size'] * 2,
-                                           reduce_only=True)
-        else:
-            pytest.fail('position size is zero')
+    base = utils.get_base_asset(symbol)
+    acc = interface.get_account()
+    if base not in acc:
+        return
+    product = next(p for p in interface.get_products() if p['symbol'] == symbol)
+    increment = product['base_increment']
+    precision = utils.increment_to_precision(increment)
+    position = utils.trunc(acc[base]['available'], precision)
+    if 0 < position:
+        order = interface.market_order(symbol, 'sell', position)
         wait_till_filled(interface, order)
-        assert interface.get_position(symbol) is None
-    else:
-        base = utils.get_base_asset(symbol)
-        acc = interface.get_account()
-        if base not in acc:
-            return
-        product = next(p for p in interface.get_products() if p['symbol'] == symbol)
-        increment = product['base_increment']
-        precision = utils.increment_to_precision(increment)
-        position = utils.trunc(acc[base]['available'], precision)
-        if 0 < position:
-            order = interface.market_order(symbol, 'sell', position)
-            wait_till_filled(interface, order)
-            assert interface.get_account(base)['available'] == approx(0)
+        assert interface.get_account(base)['available'] == approx(0)
 
 
 @contextmanager
@@ -266,39 +196,17 @@ def cancelling_order(interface: ABCBaseExchangeInterface, symbol: str):
     price = interface.get_price(symbol)
 
     # place our limit order
-    if isinstance(interface, FuturesExchangeInterface):
-        order_size = utils.trunc(100 / price, product['size_precision'])
-        limit_price = utils.trunc(price * 0.90, product['price_precision'])
-        order = interface.limit_order(symbol, Side.BUY, limit_price, order_size)
-        assert order.symbol == symbol
-        assert 0 <= order.id
-        assert order.size == approx(order_size)
-        assert order.status == OrderStatus.OPEN
-        assert order.type == OrderType.LIMIT
-        assert order.contract_type == ContractType.PERPETUAL
-        assert order.side == Side.BUY
-        assert order.position == PositionMode.BOTH
-        assert order.limit_price == approx(limit_price)
-        assert order.time_in_force == TimeInForce.GTC
-    else:
-        order_size = utils.trunc(100 / price, utils.increment_to_precision(product['base_increment']))
-        limit_price = utils.trunc(price * 0.90, 2)  # 2 should be fine? we don't have quote asset increment here.
-        order = interface.limit_order(symbol, 'buy', limit_price, order_size)
-        assert order.get_symbol() == symbol
-        # TODO these are not properly homogenized for spot markets
-        assert order.get_status()['status'].lower() in ('new', 'open', 'filled')
-        assert order.get_type().lower() == OrderType.MARKET
-        assert order.get_size() == approx(order_size)
-        assert order.get_side().lower() == Side.BUY
-        assert order.get_price() == approx(limit_price)
+    order_size = utils.trunc(100 / price, utils.increment_to_precision(product['base_increment']))
+    limit_price = utils.trunc(price * 0.90, 2)  # 2 should be fine? we don't have quote asset increment here.
+    order = interface.limit_order(symbol, 'buy', limit_price, order_size)
+    assert order.get_symbol() == symbol
+    # TODO these are not properly homogenized for spot markets
+    assert order.get_status()['status'].lower() in ('new', 'open', 'filled')
+    assert order.get_type().lower() == OrderType.MARKET
+    assert order.get_size() == approx(order_size)
+    assert order.get_side().lower() == Side.BUY
+    assert order.get_price() == approx(limit_price)
 
     yield order
 
     res = interface.cancel_order(symbol, order.id)
-
-    if isinstance(interface, FuturesExchangeInterface):
-        assert res.status == OrderStatus.CANCELED
-
-        assert order != res
-        res.status = OrderStatus.OPEN
-        assert order == res

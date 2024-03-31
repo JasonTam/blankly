@@ -37,7 +37,7 @@
 
 ## Why Blankly? 
 
-Blankly is an ecosystem for algotraders enabling anyone to build, monetize and scale their trading algorithms for stocks, crypto, futures or forex. The same code can be backtested, paper traded, sandbox tested and run live by simply changing a single line. Develop locally then deploy, iterate and share using the blankly platform.
+Blankly is an ecosystem for algotraders enabling anyone to build, monetize and scale their trading algorithms for stocks, crypto or forex. The same code can be backtested, paper traded, sandbox tested and run live by simply changing a single line. Develop locally then deploy, iterate and share using the blankly platform.
 
 The blankly package is designed to be **extremely precise** in both simulation and live trading. **The engineering considerations for highly accurate simulation are described [here](blankly/BACKTESTING_ENGINEERING.md)**
 
@@ -51,7 +51,7 @@ Check out our [website](https://blankly.finance) and our [docs](https://docs.bla
 
 ---------
 
-### Trade Stocks, Crypto, Futures, and Forex
+### Trade Stocks, Crypto, and Forex
 
 ```python
 from blankly import Alpaca, CoinbasePro

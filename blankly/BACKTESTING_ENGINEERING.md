@@ -1,6 +1,6 @@
 # Backtesting Engine
 
-The blankly backtesting engine is designed for accurate & realistic evaluation of historical trades in the **spot, futures, stocks and forex** markets. While requiring minimal configuration out of the box to achieve highly accurate results.
+The blankly backtesting engine is designed for accurate & realistic evaluation of historical trades in the **spot, stocks and forex** markets. While requiring minimal configuration out of the box to achieve highly accurate results.
 
 ## Design Considerations
 
@@ -60,10 +60,6 @@ Blankly uses an event-based approach rather than a vectorized approach to evalua
 ## Market Hours
 
 Blankly accurately evaluates market open & market closes. Just like how Alpaca behaves when live, orders can be submitted in a pending status and execute extremely close to the open price. This behavior will be expanded as we add more traditional equity exchanges.
-
-## Futures Trading
-
-Blankly has begun the process of integrating one of the first open source futures backtesting engine available. The engine is still in beta but is currently correctly evaluating buy/sells against the price. Downloading & caching funding rates is currently in development.
 
 ## Suggested Features
 

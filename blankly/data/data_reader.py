@@ -21,8 +21,6 @@ import pandas as pd
 from enum import Enum
 
 from blankly.utils import convert_epochs
-from blankly.exchanges.interfaces.futures_exchange_interface import FuturesExchangeInterface
-
 
 class DataTypes(Enum):
     ohlcv_csv = 0
@@ -263,13 +261,6 @@ class JsonEventReader(DataReader):
             raise AssertionError(f"The filepath did not have a \'json\' ending - got: {file_path[-4:]}")
 
         self.__parse_json_events(file_path)
-
-
-class FundingRateEventReader(EventReader):
-    def __init__(self, symbol: str, start: int, stop: int, interface: FuturesExchangeInterface):
-        history = interface.get_funding_rate_history(symbol, start, stop)
-        history = {ev['time']: {'symbol': symbol, 'rate': ev['rate']} for ev in history}
-        super().__init__('__blankly__funding_rate', history)
 
 
 class TickReader(__FormatReader):

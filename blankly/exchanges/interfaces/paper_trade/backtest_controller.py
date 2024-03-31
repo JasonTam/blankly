@@ -45,7 +45,7 @@ from blankly.exchanges.interfaces.paper_trade.backtest.format_platform_result im
 
 from blankly.exchanges.interfaces.paper_trade.abc_backtest_controller import ABCBacktestController
 from blankly.exchanges.exchange import ABCExchange
-from blankly.data.data_reader import PriceReader, TickReader, DataReader, FundingRateEventReader
+from blankly.data.data_reader import PriceReader, TickReader, DataReader
 
 
 def to_string_key(separated_list):
@@ -657,14 +657,9 @@ class BackTestController(ABCBacktestController):  # circular import to type mode
                                f"you are using. For example if you are trading \"USD-JPY\", set your quote value "
                                f"to \"JPY\". Currently it is set to {self.quote_currency}")
 
-            # This is needed for futures apparently
-            if is_future:
-                value_total += price * abs(true_available[i])
-                no_trade_value += price * abs(no_trade_available[i])
-            else:
-                # For stocks make sure not to use an absolute value
-                value_total += price * true_available[i]
-                no_trade_value += price * no_trade_available[i]
+            # For stocks make sure not to use an absolute value
+            value_total += price * true_available[i]
+            no_trade_value += price * no_trade_available[i]
 
         # Make sure to add the time key in
         true_available['time'] = local_time
@@ -817,10 +812,6 @@ class BackTestController(ABCBacktestController):  # circular import to type mode
 
         # Figure out our traded assets here
         self.prices = self.sync_prices()
-        # add funding rate events for futures trading
-        if isinstance(self.interface, FuturesPaperTradeInterface):
-            for symbol in self.prices:
-                self.add_custom_events(FundingRateEventReader(symbol, self.user_start, self.user_stop, self.interface))
         # Now ensure all events are processed
         self.parse_events()
         for symbol in self.prices:

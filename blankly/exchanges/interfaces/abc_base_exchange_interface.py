@@ -24,15 +24,12 @@ from datetime import datetime as dt
 from typing import Union
 
 import numpy
-import pandas
 import pandas as pd
 
 from blankly import utils
 from blankly.utils import time_interval_to_seconds
 
 
-# A lot of this class is just glue between ExchangeInterface and the new Futures classes.
-# At some point it should probably all be refactored away but for now let's get futures working!
 class ABCBaseExchangeInterface(abc.ABC):
 
     @abc.abstractmethod
